@@ -4,37 +4,38 @@ Master Control
 
 Welcome to one central part of my home automation.
 
-This shell script can:
-    * control wireless power sockets
+This script can:
+
+    * switch wireless power sockets
     * connect to some bluetooth audio device
-    * handle my external usb disk
-    * start some apps (which needs the disk to be mounted)
-    * handle dependencies inbetween
-      (unmount disk before switching power off;
-      kill apps before unmounting; etc.)
+    * handle my external usb disks
+    * start some apps (which need the disk to be mounted)
+    * - or run scripts in a new terminal window
+    * handle dependencies inbetween:
+    * - unmount disk before switching power off
+    * - kill apps before unmounting
 
 
-It runs on macOS and requires `bash 4`.
+It runs on macOS and requires some recent `python 3`.
 
-To control the power sockets,
-`full_power <https://github.com/spookey/full_power>`_
-is used!
+To control the power sockets, full_power_ is used!
+
 
 Some parts are in plain `Apple Script` as this was the only way I could
 figure out how to automate bluetooth dialup.
 
-If invoked directly it will install a bunch of files in ``~/bin``.
+There is some commandline with this scheme::
 
-Those files each source ``master_control.sh`` and then call one specific
-function::
+    shove {module} {action} [--{flags}]
 
-    power_full_light_desk.command
-    power_full_store_disk.command
-    power_null_light_desk.command
-    power_null_store_disk.command
-    store_mount.command
-    store_umount.command
-    ...
+So to prepare everything for listening to music, I type::
 
-I then use Alfred to launch them.
-The default values used can be changed in ``config.sh``.
+    shove start itunes --lift
+
+**Flags**:
+
+:--lift: If given, turns things on, if omitted things are turned off.
+:--slow: Walk through the full dependency path (with duplicate actions).
+:--dump: Just print the path without invoking any module.
+
+.. _full_power: https://github.com/spookey/full_power

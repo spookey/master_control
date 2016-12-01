@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-for name in "config" "master_control"; do
-    while read -r line; do
-        printf "%02d %s \n" $((++NUM)) "$line"
-    done < <(grep -i "# Fixme:.*\." "$name.sh")
-done
