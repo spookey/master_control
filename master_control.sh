@@ -38,16 +38,8 @@ kill_apps () {
 			finished "system" "kill" "$app terminated"
 		fi
 	done
+	# Fixme: This does not stop when errors occurred.
 	return 0
-}
-
-escape_key () {
-	read -r -d '' script_escape <<EOT
-tell application "System Events"
-	key code 53
-end tell
-EOT
-	osascript -e "$script_escape"; return $?
 }
 
 ###
@@ -81,6 +73,7 @@ power_teardown () {
 		return 1
 	fi
 	kill_apps "${AUDIO_APPS[@]}"
+	# Fixme: This powers off disks before unmounting them. This is bad.
 	for sock in "${!POWER_SOCKETS[@]}"; do
 		if ! power_null "$sock"; then
 			error "power" "teardown" "$sock" "stopped"
@@ -121,6 +114,7 @@ store_mount () {
 		finished "store" "mount" "success" "$STORE_DEVICE"
 		return 0
 	fi
+	# Fixme: Find way to manually mount disk if automount failed.
 	return 1
 }
 
@@ -135,9 +129,11 @@ store_umount () {
 	if ! diskutil eject "$STORE_MOUNT" >/dev/null; then
 		error "store" "umount" "eject failed" "$STORE_DEVICE"
 		return 1
+		# Fixme: Try several times to unmount on error.
 	fi
 
 	if _store_wait true; then
+		# Fixme: _store_wait loops exactly once here. Find more elegant way.
 		finished "store" "umount" "success" "$STORE_DEVICE"
 		power_null "$STORE_SOCKET"
 		return 0
@@ -149,6 +145,15 @@ store_umount () {
 # audio
 
 audio_connect () {
+	_press_escape () {
+		read -r -d '' script_escape <<EOT
+tell application "System Events"
+	key code 53
+end tell
+EOT
+		osascript -e "$script_escape"; return $?
+	}
+
 	local output
 	read -r -d '' script_connect <<EOT
 tell application "System Events" to tell process "SystemUIServer"
@@ -169,16 +174,17 @@ end tell
 return "error connecting"
 EOT
 	power_full "$AUDIO_SOCKET" && sleep "$AUDIO_DELAY"
-	output=$(osascript -e "$script_connect"); escape_key
+	output=$(osascript -e "$script_connect")
+	_press_escape
 	finished "audio" "connect" "$output" "$AUDIO_DEVICE"
 	case $output in error*) return 1;; *) return 0;; esac
 }
 
 audio_launch () {
 	local name=$1
-	audio_connect
 
 	_is_storage () {
+		# Fixme: Find some other way to handle application resources.
 		for app in "${STORE_APPS[@]}"; do
 			case $name in $app) return 0;; *);; esac
 		done
@@ -191,6 +197,7 @@ audio_launch () {
 			return 1
 		fi
 	fi
+	audio_connect
 	if ! open_app "$name"; then return 1; fi
 	finished "audio" "launch" "success" "$name"
 	return 0
@@ -201,6 +208,8 @@ audio_launch () {
 # installation
 
 _install_generate () {
+	# Fixme: Do not bake in full paths in scripts.
+	# Fixme: Abort when launched in older bash versions, or get compatible.
 	local args
 	local func=$1; shift
 	for a in "$@"; do args+=" \"${a}\""; done
@@ -215,6 +224,7 @@ EOT
 }
 
 _install_file () {
+	# Fixme: Do not spread files around in user directories.
 	local script
 	local target
 	script=$(_install_generate "$@")

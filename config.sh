@@ -20,10 +20,12 @@ declare STORE_APPS=(
 )
 export STORE_APPS
 export STORE_DELAY=30
+# Fixme: Handle more than just one disk.
 export STORE_DEVICE="Kleinhirn"
 export STORE_MOUNT="/Volumes/${STORE_DEVICE}"
 export STORE_SOCKET="store_disk"
 
+# Fixme: Avoid listing applications twice. Find better dependency handling.
 declare AUDIO_APPS=(
 	"Deezer"
 	"iTunes"
