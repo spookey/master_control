@@ -3,20 +3,30 @@ from m_c.snips.shell import launch, launch_repeat, repeating
 
 
 class Store(Basic):
+    def __init__(
+            self, *args,
+            eject_retry=3, eject_wait=5, power_delay=30,
+            prefix=None, **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self.eject_retry = eject_retry
+        self.eject_wait = eject_wait
+        self.power_delay = power_delay
+        self.prefix = prefix
+
     def mounted(self):
         code, out, _ = launch('mount')
         if not code and out:
             for line in out:
                 if 'on /{prefix}/{disk}'.format(
-                        prefix=self.conf['prefix'].strip('/'),
-                        disk=self.conf['prime']
+                        prefix=self.prefix.strip('/'), disk=self.prime
                 ) in line:
                     return True
             return False
 
     def _disk_info(self):
         def _pull():
-            code, out, err = launch('diskutil', 'info', self.conf['prime'])
+            code, out, err = launch('diskutil', 'info', self.prime)
             if code:
                 self.message('disk is unknown', code, out, err, lvl='error')
             return [(k.strip(), v.strip()) for k, v in [
@@ -32,7 +42,7 @@ class Store(Basic):
 
     def _disk_password(self):
         code, out, err = launch(
-            'security', 'find-generic-password', '-ga', self.conf['prime']
+            'security', 'find-generic-password', '-ga', self.prime
         )
         if code:
             self.message('disk password error', code, out, err, lvl='error')
@@ -61,7 +71,7 @@ class Store(Basic):
 
     def wait_auto(self):
         for step, finished in repeating(
-                self.mounted, times=self.conf['power_delay'], patience=1
+                self.mounted, times=self.power_delay, patience=1
         ):
             if finished:
                 return True
@@ -93,9 +103,9 @@ class Store(Basic):
             return True
 
         for step, (code, out, err) in launch_repeat(
-                'diskutil', 'unmount', self.conf['prime'],
-                times=self.conf['eject_retry'],
-                patience=self.conf['eject_wait'],
+                'diskutil', 'unmount', self.prime,
+                times=self.eject_retry,
+                patience=self.eject_wait,
         ):
             if not code:
                 return True

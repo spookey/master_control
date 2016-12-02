@@ -1,9 +1,14 @@
-from m_c.parse import arguments, local_actions
+from m_c.parse import arguments, local_collect
 
 
 def run():
-    acts = local_actions()
-    args = arguments(acts)
-    prog = acts.get(args.pkg, {}).get(args.mod)
-    if prog:
-        return prog.fire(lift=args.lift, fast=(not args.slow), dump=args.dump)
+    inst = local_collect()
+    args = arguments(inst)
+    for instance in [
+            insta for ident, prime, insta in inst.get(args.module)
+            if any(args.action == act for act in [ident, prime])
+    ]:
+        return instance.fire(
+            lift=args.lift, slow=args.slow, dump=args.dump
+        )
+    return False

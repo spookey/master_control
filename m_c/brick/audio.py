@@ -1,17 +1,26 @@
 from m_c.brick.basic import Basic
-from m_c.snips.shell import launch
+from m_c.snips.shell import launch_repeat, launch
 
 
 class Audio(Basic):
+    def __init__(self, *args, delay=10, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.delay = delay
+
     def full(self):
-        _, out, err = launch(
-            'osascript', '-e',
-            SCRIPT_DIALUP.format(device=self.conf['prime'])
-        )
-        if err:
-            self.message('bluetooth dialup error', err, out, lvl='error')
-        launch('osascript', '-e', SCRIPT_ESCAPE)
-        return ''.join(out) == 'connected'
+        for step, (_, out, err) in launch_repeat(
+                'osascript', '-e',
+                SCRIPT_DIALUP.format(device=self.prime),
+                times=2, patience=self.delay,
+        ):
+            launch('osascript', '-e', SCRIPT_ESCAPE)
+            if ''.join(out) == 'connected':
+                return True
+            self.message(
+                'bluetooth dialup try #{:02}'.format(step),
+                err, out, lvl='error'
+            )
+        return False
 
     def null(self):
         return True

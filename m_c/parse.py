@@ -2,47 +2,49 @@ from argparse import ArgumentParser
 
 from m_c import local
 
+FLAGS = dict(
+    lift='launch direction to run [raise up/put down]',
+    slow='walk through all dependencies [unoptimized]',
+    dump='do not launch anything, just print the path',
+)
 
-def local_actions():
+
+def local_collect():
     def _pull(inst):
         return [lc for lc in vars(local).values() if isinstance(lc, inst)]
 
     return dict((
-        str(pkg.__name__).lower(), dict((
-            str(mod.ident).lower(), mod
-        ) for mod in _pull(pkg))
-    ) for pkg in _pull(type))
+        str(module.__name__).lower(), list((
+            str(action.ident).lower(), str(action.prime).lower(), action
+        ) for action in _pull(module))
+    ) for module in _pull(type))
 
 
-def arguments(actions):
-    def _glob(pars):
-        return [pars.add_argument(
-            '-{name}'.format(name=name[0]),
-            '--{name}'.format(name=name),
-            action='store_true',
-            help='{text} (default: \'%(default)s\')'.format(text=text)
-        ) for name, text in [
-            ('lift', 'launch direction to run [raise up/put down]'),
-            ('slow', 'walk through all dependencies [unoptimized]'),
-            ('dump', 'do not launch anything, just print the path'),
-        ]]
-
+def arguments(instances):
     arg_prs = ArgumentParser(
         add_help=True, allow_abbrev=True, prog='master control',
     )
-    sub_prs = arg_prs.add_subparsers(dest='pkg')
-    sub_prs.type = str.lower
-    sub_prs.required = True
+    mod_prs = arg_prs.add_subparsers(dest='module')
+    mod_prs.type = str.lower
+    mod_prs.required = True
 
-    for pkg, mods in sorted(actions.items()):
-        choices = sorted(mods.keys())
-        pkg_prs = sub_prs.add_parser(
-            pkg, help='{{{}}}'.format(','.join(sorted(mods.keys())))
+    for module, actions in sorted(instances.items()):
+        act_prs = mod_prs.add_parser(
+            module, help='{{{}}}'.format(','.join(sorted(
+                idt for idt, _, _ in actions
+            )))
         )
-        pkg_prs.add_argument(
-            'mod', action='store', choices=choices,
-            help='{} package actions'.format(pkg), type=str.lower,
+        act_prs.add_argument(
+            'action', action='store', choices=[fl for at in [
+                [idt, prm] for idt, prm, _ in actions
+            ] for fl in at],
+            help='{} module actions'.format(module), type=str.lower,
         )
-        _glob(pkg_prs)
+        for flag, text in FLAGS.items():
+            act_prs.add_argument(
+                '-{f}'.format(f=flag[0]), '--{flag}'.format(flag=flag),
+                action='store_true',
+                help='{text} (default: \'%(default)s\')'.format(text=text)
+            )
 
     return arg_prs.parse_args()
