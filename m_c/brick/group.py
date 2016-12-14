@@ -1,7 +1,7 @@
 from m_c.brick.basic import Basic
 
 
-class Phony(Basic):
+class Group(Basic):
     def full(self):
         return True
 

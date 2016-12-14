@@ -1,5 +1,5 @@
 from m_c.brick.audio import Audio
-from m_c.brick.phony import Phony
+from m_c.brick.group import Group
 from m_c.brick.power import Power
 from m_c.brick.start import Start
 from m_c.brick.store import Store
@@ -10,20 +10,20 @@ POWER = dict(
     hostname='datensammel-leitschiene',
     url='http://{hostname}.local',
 )
-POWER_PHONY = Phony(
-    'Poweroff'
+POWER_GROUP = Group(
+    'Teardown'
 )
 
 POWER_DISK0 = Power(
-    'Kleinhirn', POWER_PHONY,
+    'Kleinhirn', POWER_GROUP,
     prime='00010', **POWER
 )
 POWER_LAMP0 = Power(
-    'Light', POWER_PHONY,
+    'Light', POWER_GROUP,
     prime='01000', **POWER
 )
 POWER_TONE0 = Power(
-    'Stereo', POWER_PHONY,
+    'Stereo', POWER_GROUP,
     prime='00100', **POWER
 )
 
@@ -35,7 +35,7 @@ STORE_DISK0 = Store(
     **STORE
 )
 STORE_DISK1 = Store(
-    'Großhirn', POWER_PHONY,
+    'Großhirn', POWER_GROUP,
     **STORE
 )
 
