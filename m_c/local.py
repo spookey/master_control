@@ -28,7 +28,7 @@ POWER_TONE0 = Power(
 )
 
 
-STORE = dict(prefix='/Volumes', power_delay=30, eject_retry=3, eject_wait=5)
+STORE = dict(eject_retry=3, eject_wait=5, power_delay=30)
 
 STORE_DISK0 = Store(
     'Kleinhirn', POWER_DISK0,

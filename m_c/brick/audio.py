@@ -7,25 +7,29 @@ class Audio(Basic):
         super().__init__(*args, **kwargs)
         self.delay = delay
 
-    def full(self):
+    def do_fire(self, lift=True):
         for step, (_, out, err) in launch_repeat(
-                'osascript', '-e',
-                SCRIPT_DIALUP.format(device=self.prime),
-                times=2, patience=self.delay,
+                'osascript', '-e', SCRIPT_ACTION.format(
+                    device=self.prime,
+                    desired=('Connect' if lift else 'Disconnect'),
+                    already=('Disconnect' if lift else 'Connect'),
+                ), times=2, patience=self.delay,
         ):
             launch('osascript', '-e', SCRIPT_ESCAPE)
-            if ''.join(out) == 'connected':
+            if ''.join(out) == 'success':
                 return True
             self.message(
-                'bluetooth dialup try #{:02}'.format(step),
-                err, out, lvl='error'
+                'bluetooth try #{:02}'.format(step), err, out, lvl='error'
             )
         return False
 
-    def null(self):
-        return True
+    def full(self):
+        return self.do_fire(True)
 
-SCRIPT_DIALUP = '''
+    def null(self):
+        return self.do_fire(False)
+
+SCRIPT_ACTION = '''
 tell application "System Events" to tell process "SystemUIServer"
     tell first menu bar
         tell (first menu bar item whose description is "bluetooth")
@@ -34,12 +38,12 @@ tell application "System Events" to tell process "SystemUIServer"
                 tell (first menu item whose title is "{device}")
                     click
                     tell first menu
-                        if exists (menu item "Connect") then
-                            click menu item "Connect"
-                            return "connected"
-                        else if exists (menu item "Disconnect") then
-                            log "already connected"
-                            return "connected"
+                        if exists (menu item "{desired}") then
+                            click menu item "{desired}"
+                            return "success"
+                        else if exists (menu item "{already}") then
+                            log "already there"
+                            return "success"
                         end if
                     end tell
                 end tell

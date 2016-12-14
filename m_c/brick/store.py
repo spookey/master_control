@@ -5,42 +5,41 @@ from m_c.snips.shell import launch, launch_repeat, repeating
 class Store(Basic):
     def __init__(
             self, *args,
-            eject_retry=3, eject_wait=5, power_delay=30,
-            prefix=None, **kwargs
+            eject_retry=3, eject_wait=5, power_delay=30, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.eject_retry = eject_retry
         self.eject_wait = eject_wait
         self.power_delay = power_delay
-        self.prefix = prefix
-
-    def mounted(self):
-        code, out, _ = launch('mount')
-        if not code and out:
-            for line in out:
-                if 'on /{prefix}/{disk}'.format(
-                        prefix=self.prefix.strip('/'), disk=self.prime
-                ) in line:
-                    return True
-            return False
 
     def _disk_info(self):
-        def _pull():
-            code, out, err = launch('diskutil', 'info', self.prime)
-            if code:
-                self.message('disk is unknown', code, out, err, lvl='error')
-            return [(k.strip(), v.strip()) for k, v in [
-                ln.split(':') for ln in out if ln
-            ]]
-        uuid, node = None, None
-        for key, val in _pull():
-            if key == 'Disk / Partition UUID':
-                uuid = val
-            if key == 'Device Node':
-                node = val
-        return uuid, node
+        code, out, err = launch('diskutil', 'info', self.prime)
+        if code:
+            self.message('disk unknown', code, out, err, lvl='error')
+        return dict((k.strip(), v.strip()) for k, v in [
+            ln.split(':') for ln in out if ln
+        ])
 
-    def _disk_password(self):
+    def mounted(self):
+        return self._disk_info().get('Mounted') == 'Yes'
+
+    def wait_disk(self):
+        if not any(obj.__class__.__name__ == 'Power' for obj in self.below):
+            return False
+
+        for step, finished in repeating(
+                self.mounted, times=self.power_delay, patience=1
+        ):
+            if finished:
+                return True
+            if not step % 3:
+                self.message(
+                    'disk autmount wait #{:02}'.format(step), lvl='delay'
+                )
+        self.message('disk autmount failed', 'giving up', lvl='error')
+        return False
+
+    def _fetch_password(self):
         code, out, err = launch(
             'security', 'find-generic-password', '-ga', self.prime
         )
@@ -69,23 +68,15 @@ class Store(Basic):
         self.message('disk mount error', code, out, err, lvl='error')
         return False
 
-    def wait_auto(self):
-        for step, finished in repeating(
-                self.mounted, times=self.power_delay, patience=1
-        ):
-            if finished:
-                return True
-            self.message('disk autmount wait #{:02}'.format(step), lvl='delay')
-        self.message('disk autmount failed', 'giving up', lvl='error')
-        return False
-
-    def exec_hard(self):
-        d_uuid, d_node = self._disk_info()
+    def mount_manually(self):
+        info = self._disk_info()
+        d_uuid = info.get('Disk / Partition UUID')
+        d_node = info.get('Device Node')
         if not all([d_uuid, d_node]):
             self.message('disk info not present', d_node, d_uuid, lvl='fatal')
             return False
 
-        passwd = self._disk_password()
+        passwd = self._fetch_password()
         if not passwd:
             self.message('disk password not present', lvl='fatal')
             return False
@@ -93,7 +84,7 @@ class Store(Basic):
         return self._disk_unlock(d_uuid, passwd) and self._disk_mount(d_node)
 
     def full(self):
-        for func in [self.mounted, self.wait_auto, self.exec_hard]:
+        for func in [self.mounted, self.wait_disk, self.mount_manually]:
             if func():
                 return True
         return False
@@ -104,8 +95,7 @@ class Store(Basic):
 
         for step, (code, out, err) in launch_repeat(
                 'diskutil', 'unmount', self.prime,
-                times=self.eject_retry,
-                patience=self.eject_wait,
+                times=self.eject_retry, patience=self.eject_wait
         ):
             if not code:
                 return True
