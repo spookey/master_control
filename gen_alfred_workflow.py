@@ -7,8 +7,6 @@ from xml.dom import minidom
 
 from m_c.parse import local_collect
 
-KEYWORD = 'shove'
-SUBTEXT = 'Lift up or put down things'
 WORKING = path.expanduser('~/bin')
 COMMAND = '''
 date
@@ -17,7 +15,7 @@ $@ 2>&1
 echo "RESULT: $?"
 '''.strip()
 CONFIG_TEMPLATE = dict(
-    command=path.join(WORKING, KEYWORD),
+    command=path.join(WORKING, 'shove'),
     interpreter='/usr/local/bin/python3',
     logfile=path.join(WORKING, '_alfred_auto.log'),
 )
@@ -162,12 +160,10 @@ def object_script(uid, script):
     )
 
 
-def object_arguments(uid, command, interpreter):
+def object_arguments(uid, argument):
     return _raw_object(
         uid=uid, config=dict(
-            argument='{interpreter} {command} {{query}}'.format(
-                command=command, interpreter=interpreter
-            ),
+            argument=argument,
             variables=dict(),
         ),
         ptype='utility.argument', version=1
@@ -177,11 +173,11 @@ def object_arguments(uid, command, interpreter):
 def object_keyword(uid, keyword, subtext):
     return _raw_object(
         uid=uid, config=dict(
-            argumenttype=0,
+            argumenttype=2,
             keyword=keyword,
             subtext=subtext,
             text=keyword.capitalize(),
-            whitespace=True,
+            whitespace=False,
         ),
         ptype='input.keyword', version=1
     )
@@ -197,7 +193,7 @@ def connect(*targets):
 
 
 def pull_elems():
-    for module, actions in local_collect().items():
+    for module, actions in sorted(local_collect().items()):
         for ident, _, _ in actions:
             for state, flag, sign in [('full', '-l', '+'), ('null', '', '-')]:
                 yield (
@@ -216,30 +212,40 @@ def generate():
             'the_script', script=COMMAND
         ),
         object_arguments(
-            'the_arguments', command=CONFIG_TEMPLATE['command'],
-            interpreter=CONFIG_TEMPLATE['interpreter']
-        ),
-        object_keyword(
-            'the_keyword', keyword=KEYWORD, subtext=SUBTEXT
+            'the_main_arguments',
+            argument='{interpreter} {command} {{query}}'.format(
+                command=CONFIG_TEMPLATE['command'],
+                interpreter=CONFIG_TEMPLATE['interpreter']
+            ),
         ),
     ]
     uidata = dict(
-        the_logfile=dict(xpos=520, ypos=10),
-        the_script=dict(xpos=370, ypos=10),
-        the_arguments=dict(xpos=300, ypos=40),
-        the_keyword=dict(xpos=10, ypos=10),
+        the_logfile=dict(xpos=820, ypos=10),
+        the_script=dict(xpos=670, ypos=10),
+        the_main_arguments=dict(xpos=600, ypos=40),
     )
     connections = dict(
         the_script=connect('the_logfile'),
-        the_arguments=connect('the_script'),
-        the_keyword=connect('the_arguments'),
+        the_main_arguments=connect('the_script'),
     )
 
-    ypos = 125
+    ypos = 10
     for uid, argument, name in pull_elems():
-        objects.append(object_remote(uid, argument, name))
-        uidata[uid] = dict(xpos=10, ypos=ypos)
-        connections[uid] = connect('the_arguments')
+        trig = '{}_trigger'.format(uid)
+        objects.append(object_remote(trig, argument, name))
+        uidata[trig] = dict(xpos=350, ypos=ypos)
+        connections[trig] = connect('the_main_arguments')
+
+        args = '{}_arguments'.format(uid)
+        objects.append(object_arguments(args, argument=argument))
+        uidata[args] = dict(xpos=200, ypos=ypos + 30)
+        connections[args] = connect('the_main_arguments')
+
+        keyw = '{}_keyword'.format(uid)
+        objects.append(object_keyword(keyw, keyword=name, subtext=''))
+        uidata[keyw] = dict(xpos=10, ypos=ypos)
+        connections[keyw] = connect(args)
+
         ypos += 115
 
     return connections, objects, uidata
