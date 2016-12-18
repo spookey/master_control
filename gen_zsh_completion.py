@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from m_c.parse import local_collect, FLAGS
+from lib.parse import local_collect, FLAGS
 
 TEMPLATE_ACTIONS = '''
         ({module})

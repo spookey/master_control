@@ -1,9 +1,8 @@
-from m_c.brick.audio import Audio
-from m_c.brick.group import Group
-from m_c.brick.power import Power
-from m_c.brick.start import Start
-from m_c.brick.store import Store
-
+from lib.brick.audio import Audio
+from lib.brick.group import Group
+from lib.brick.power import Power
+from lib.brick.start import Start
+from lib.brick.store import Store
 
 GROUP_TEARD = Group(
     'Teardown'
@@ -58,4 +57,3 @@ START_BKUP0 = Start(
     'Rsync_K_G', STORE_DISK0, STORE_DISK1,
     prime='/Volumes/Großhirn/disk_fetch.sh', script=True
 )
-

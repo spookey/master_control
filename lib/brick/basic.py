@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from m_c.snips.front import message
+from lib.snips.front import message
 
 
 class Basic(ABC):

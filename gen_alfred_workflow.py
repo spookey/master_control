@@ -5,7 +5,7 @@ from os import path
 from sys import stderr
 from xml.dom import minidom
 
-from m_c.parse import local_collect
+from lib.parse import local_collect
 
 WORKING = path.expanduser('~/bin')
 COMMAND = '''

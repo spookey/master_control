@@ -1,5 +1,5 @@
-from m_c.brick.basic import Basic
-from m_c.snips.shell import launch
+from lib.brick.basic import Basic
+from lib.snips.shell import launch
 
 
 class Start(Basic):

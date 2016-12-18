@@ -1,4 +1,4 @@
-from m_c.brick.basic import Basic
+from lib.brick.basic import Basic
 
 
 class Group(Basic):

@@ -1,5 +1,5 @@
-from m_c.brick.basic import Basic
-from m_c.snips.fetch import get_remote
+from lib.brick.basic import Basic
+from lib.snips.fetch import get_remote
 
 
 class Power(Basic):

@@ -1,4 +1,4 @@
-from m_c.parse import arguments, local_collect
+from lib.parse import arguments, local_collect
 
 
 def run():

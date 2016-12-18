@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from m_c import local
+from lib import local
 
 FLAGS = dict(
     lift='launch direction to run [raise up/put down]',
