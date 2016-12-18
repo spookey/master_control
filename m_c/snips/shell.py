@@ -30,5 +30,5 @@ def launch_repeat(*args, times=1, patience=0, **kwargs):
             launch, *args, times=times, patience=patience, **kwargs
     ):
         yield step, (code, out, err)
-        if code == 0:
+        if not code:
             break

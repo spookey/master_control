@@ -5,72 +5,57 @@ from m_c.brick.start import Start
 from m_c.brick.store import Store
 
 
+GROUP_TEARD = Group(
+    'Teardown'
+)
+
 POWER = dict(
     family='01101',
     hostname='datensammel-leitschiene',
     url='http://{hostname}.local',
 )
-POWER_GROUP = Group(
-    'Teardown'
-)
-
 POWER_DISK0 = Power(
-    'Kleinhirn', POWER_GROUP,
-    prime='00010', **POWER
+    'Kleinhirn', GROUP_TEARD, prime='00010', **POWER
 )
 POWER_LAMP0 = Power(
-    'Light', POWER_GROUP,
-    prime='01000', **POWER
+    'Light', GROUP_TEARD, prime='01000', **POWER
 )
 POWER_TONE0 = Power(
-    'Stereo', POWER_GROUP,
-    prime='00100', **POWER
+    'Stereo', GROUP_TEARD, prime='00100', **POWER
 )
 
 
 STORE = dict(eject_retry=3, eject_wait=5, power_delay=30)
-
 STORE_DISK0 = Store(
-    'Kleinhirn', POWER_DISK0,
-    **STORE
+    'Kleinhirn', POWER_DISK0, **STORE
 )
 STORE_DISK1 = Store(
-    'Großhirn', POWER_GROUP,
-    **STORE
+    'Großhirn', GROUP_TEARD, **STORE
 )
 
-
-AUDIO = dict(delay=3)
 
 AUDIO_TONE0 = Audio(
-    'Krawallschachtel', POWER_TONE0,
-    **AUDIO
+    'Krawallschachtel', POWER_TONE0, delay=3
 )
 
-
-START = dict()
 
 START_PHOTO = Start(
-    'Photos', STORE_DISK0,
-    **START
+    'Photos', STORE_DISK0
 )
 START_LIGHT = Start(
-    'Lightroom', STORE_DISK0,
-    prime='Adobe Photoshop Lightroom 4', **START
+    'Lightroom', STORE_DISK0, prime='Adobe Photoshop Lightroom 4'
 )
 START_ITUNE = Start(
-    'iTunes', STORE_DISK0, AUDIO_TONE0,
-    **START
+    'iTunes', STORE_DISK0, AUDIO_TONE0
 )
 START_DEEZE = Start(
-    'Deezer', AUDIO_TONE0,
-    **START
+    'Deezer', AUDIO_TONE0
 )
 START_MOVIS = Start(
-    'Movist', STORE_DISK0, STORE_DISK1, AUDIO_TONE0,
-    **START
+    'Movist', STORE_DISK0, STORE_DISK1, AUDIO_TONE0
 )
 START_BKUP0 = Start(
     'Rsync_K_G', STORE_DISK0, STORE_DISK1,
-    prime='/Volumes/Großhirn/disk_fetch.sh', script=True, **START
+    prime='/Volumes/Großhirn/disk_fetch.sh', script=True
 )
+

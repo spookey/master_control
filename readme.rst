@@ -18,6 +18,7 @@ This script can:
 
 It runs on macOS and requires some recent `python 3`.
 
+For more information visit the `project description`_.
 To control the power sockets, full_power_ is used!
 
 
@@ -38,4 +39,5 @@ So to prepare everything for listening to music, I type::
 :--slow: Walk through the full dependency path (with duplicate actions).
 :--dump: Just print the path without invoking any module.
 
+.. _project description: https://www.der-beweis.de/build/master_control
 .. _full_power: https://github.com/spookey/full_power

@@ -17,7 +17,7 @@ class Start(Basic):
             return True
 
         code, _, _ = launch('open', '-a', self.prime)
-        return code == 0
+        return not code
 
     def null(self):
         flag = '-if' if self.script else '-ix'
@@ -25,7 +25,7 @@ class Start(Basic):
         if code:
             return True
         code, _, _ = launch('pkill', flag, self.prime)
-        return code == 0
+        return not code
 
 
 SCRIPT_LAUNCH = '''

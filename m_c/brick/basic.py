@@ -65,7 +65,10 @@ class Basic(ABC):
         )
         for elem in chain:
             func = elem.full if lift else elem.null
-            self.message('running module', elem, lvl=None)
+            self.message(
+                '{}running module'.format('not ' if dump else ''),
+                elem, lvl=None
+            )
             if dump:
                 continue
             if not func():

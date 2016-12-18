@@ -4,8 +4,7 @@ from m_c.snips.shell import launch, launch_repeat, repeating
 
 class Store(Basic):
     def __init__(
-            self, *args,
-            eject_retry=3, eject_wait=5, power_delay=30, **kwargs
+            self, *args, eject_retry=3, eject_wait=5, power_delay=30, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.eject_retry = eject_retry
