@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 
 from lib import local
 
+PROGNAME = 'shove'
 FLAGS = dict(
     lift='launch direction to run [raise up/put down]',
     slow='walk through all dependencies [unoptimized]',

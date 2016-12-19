@@ -2,6 +2,7 @@ from lib.brick.audio import Audio
 from lib.brick.group import Group
 from lib.brick.power import Power
 from lib.brick.start import Start
+from lib.brick.state import State
 from lib.brick.store import Store
 
 GROUP_TEARD = Group(
@@ -16,13 +17,12 @@ POWER = dict(
 POWER_DISK0 = Power(
     'Kleinhirn', GROUP_TEARD, prime='00010', **POWER
 )
-POWER_LAMP0 = Power(
-    'Light', GROUP_TEARD, prime='01000', **POWER
-)
 POWER_TONE0 = Power(
     'Stereo', GROUP_TEARD, prime='00100', **POWER
 )
-
+POWER_LAMP0 = Power(
+    'Light', GROUP_TEARD, prime='01000', **POWER
+)
 
 STORE = dict(eject_retry=3, eject_wait=5, power_delay=30)
 STORE_DISK0 = Store(
@@ -56,4 +56,28 @@ START_MOVIS = Start(
 START_BKUP0 = Start(
     'Rsync_K_G', STORE_DISK0, STORE_DISK1,
     prime='/Volumes/Großhirn/disk_fetch.sh', script=True
+)
+
+
+STATE_SLEEP = State(
+    'Sleep', GROUP_TEARD, command='sleepnow'
+)
+STATE_SCOFF = State(
+    'Screensleep', command='sleepdsp'
+
+)
+STATE_SCLCK = State(
+    'Screenlock', command='lock_dsp'
+)
+STATE_SCSAV = State(
+    'Screensaver', command='scrsaver'
+)
+STATE_LOGOU = State(
+    'Logout', command='sign_off'
+)
+STATE_RESTA = State(
+    'Restart', command='re_start'
+)
+STATE_SHUTD = State(
+    'Shutdown', command='shutdown'
 )
