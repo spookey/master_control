@@ -1,4 +1,5 @@
-APP_MODULE ?= m_c
+APP_NAME ?= shove
+LIB_MODULE ?= lib
 
 help:
 	@echo "master control makefile"
@@ -27,15 +28,15 @@ PYLINT_TPL := \
   ↪︎ {category} {module}.{obj} ({symbol} {msg_id})
 PYREV_CMD := pyreverse
 PYREV_FILES := \
-	classes_$(APP_MODULE).png \
-	packages_$(APP_MODULE).png
+	classes_$(APP_NAME).png \
+	packages_$(APP_NAME).png
 
 
 cleanrev:
 	@$(DELTREE_CMD) $(PYREV_FILES)
 
 cleanpyc:
-	@$(FIND_CMD) $(APP_MODULE) \
+	@$(FIND_CMD) . \
 		-name '*.pyc' -delete -print \
 		-o \
 		-name '__pycache__' -delete -print
@@ -44,9 +45,7 @@ clean: cleanpyc cleanrev
 
 
 count:
-	@$(CLOC_CMD) \
-		--progress-rate=5 \
-		"$(APP_MODULE)"
+	@$(CLOC_CMD) --progress-rate=5 .
 
 graph:
 	@$(PYREV_CMD) \
@@ -54,8 +53,8 @@ graph:
 		--filter-mode="ALL" \
 		--module-names="yes" \
 		--output png \
-		--project="$(APP_MODULE)" \
-		"$(APP_MODULE)"
+		--project="$(APP_NAME)" \
+		"$(LIB_MODULE)"
 
 grapho: graph
 	@$(OPEN_CMD) $(PYREV_FILES)
@@ -66,10 +65,10 @@ lint:
 		--msg-template="$(PYLINT_TPL)" \
 		--output-format="colorized" \
 		--reports="no" \
-		"$(APP_MODULE)"
+		"$(LIB_MODULE)"
 
 reqs:
 	@$(PIPREQS_CMD) --force .
 
 sort:
-	@$(ISORT_CMD) -cs -fss -m=5 -y -rc $(APP_MODULE)
+	@$(ISORT_CMD) -cs -fss -m=5 -y -rc "$(LIB_MODULE)"
