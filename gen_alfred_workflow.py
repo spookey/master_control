@@ -5,7 +5,7 @@ from os import path
 from sys import stderr
 from xml.dom import minidom
 
-from lib.parse import local_collect
+from lib.parse import collect_local
 
 WORKING = path.expanduser('~/bin')
 COMMAND = '''
@@ -193,7 +193,7 @@ def connect(*targets):
 
 
 def pull_elems():
-    for module, actions in sorted(local_collect().items()):
+    for module, actions in sorted(collect_local().items()):
         for ident, _, _ in actions:
             for state, flag, sign in [('full', '-l', '+'), ('null', '', '-')]:
                 yield (

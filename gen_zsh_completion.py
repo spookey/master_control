@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from lib.parse import local_collect, FLAGS
+from lib.parse import FLAGS, collect_local
+
 
 TEMPLATE_ACTIONS = '''
         ({module})
@@ -62,7 +63,7 @@ def main(progname='shove'):
     modules_list = []
     actions_case = []
 
-    for module, actions in sorted(local_collect().items()):
+    for module, actions in sorted(collect_local().items()):
         modules_list.append(module)
         actions_case.append(TEMPLATE_ACTIONS.format(
             actions_listing=_listing(*_actions_list(actions)),

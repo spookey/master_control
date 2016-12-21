@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from lib.snips.alert import Log
 from lib.snips.front import message
 
 
@@ -12,6 +13,7 @@ class Basic(ABC):
         for elem in depends:
             self.below.append(elem)
             elem.above.append(self)
+        self.log = Log.get(__name__, self.__class__.__name__)
 
     @abstractmethod
     def full(self):

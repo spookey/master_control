@@ -1,13 +1,15 @@
 APP_NAME ?= shove
 LIB_MODULE ?= lib
+LOGGER_DIR ?= log
 
 help:
 	@echo "master control makefile"
 	@echo "------ ------- --------"
 	@echo
 	@echo "clean"		"\t\t" "clean up unnecessary files"
-	@echo " ↪︎ rev"		"\t\t" "clean up pyreverse files"
+	@echo " ↪︎ log"		"\t\t" "clean up old log files"
 	@echo " ↪︎ pyc"		"\t\t" "clean up python temp files"
+	@echo " ↪︎ rev"		"\t\t" "clean up pyreverse files"
 	@echo "count"		"\t\t" "count lines of code with cloc"
 	@echo "graph"		"\t\t" "make graph with pyreverse"
 	@echo " ↪︎ o"		"\t\t" "make graph and open them"
@@ -31,6 +33,8 @@ PYREV_FILES := \
 	classes_$(APP_NAME).png \
 	packages_$(APP_NAME).png
 
+cleanlog:
+	@$(DELTREE_CMD) $(LOGGER_DIR)/*.log.?
 
 cleanrev:
 	@$(DELTREE_CMD) $(PYREV_FILES)
@@ -41,7 +45,7 @@ cleanpyc:
 		-o \
 		-name '__pycache__' -delete -print
 
-clean: cleanpyc cleanrev
+clean: cleanlog cleanpyc cleanrev
 
 
 count:
@@ -71,4 +75,4 @@ reqs:
 	@$(PIPREQS_CMD) --force .
 
 sort:
-	@$(ISORT_CMD) -cs -fss -m=5 -y -rc "$(LIB_MODULE)"
+	@$(ISORT_CMD) -cs -fss -m=5 -y -rc .
