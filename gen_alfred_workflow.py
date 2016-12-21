@@ -122,10 +122,10 @@ def _raw_object(uid, config, ptype='trigger.remote', version=1):
     )
 
 
-def object_remote(uid, argument, name):
+def object_remote(uid, name):
     return _raw_object(
         uid, config=dict(
-            argument=argument, argumenttype=3,
+            argument='', argumenttype=0,
             triggerid=name, triggername=name,
             workflowonly=False
         ),
@@ -198,7 +198,7 @@ def pull_elems():
             for state, flag, sign in [('full', '-l', '+'), ('null', '', '-')]:
                 yield (
                     'the_{}_{}_{}'.format(state, module, ident),
-                    '{} {} {}'.format(module, ident, flag),
+                    '{} {} {}'.format(module, ident, flag).strip(),
                     '{}{}_{}'.format(sign, module, ident),
                 )
 
@@ -220,9 +220,9 @@ def generate():
         ),
     ]
     uidata = dict(
-        the_logfile=dict(xpos=820, ypos=10),
-        the_script=dict(xpos=670, ypos=10),
-        the_main_arguments=dict(xpos=600, ypos=40),
+        the_logfile=dict(xpos=720, ypos=65),
+        the_script=dict(xpos=570, ypos=65),
+        the_main_arguments=dict(xpos=500, ypos=95),
     )
     connections = dict(
         the_script=connect('the_logfile'),
@@ -231,22 +231,22 @@ def generate():
 
     ypos = 10
     for uid, argument, name in pull_elems():
-        trig = '{}_trigger'.format(uid)
-        objects.append(object_remote(trig, argument, name))
-        uidata[trig] = dict(xpos=350, ypos=ypos)
-        connections[trig] = connect('the_main_arguments')
-
         args = '{}_arguments'.format(uid)
         objects.append(object_arguments(args, argument=argument))
-        uidata[args] = dict(xpos=200, ypos=ypos + 30)
+        uidata[args] = dict(xpos=200, ypos=ypos + 85)
         connections[args] = connect('the_main_arguments')
+
+        remo = '{}_remote'.format(uid)
+        objects.append(object_remote(remo, name))
+        uidata[remo] = dict(xpos=10, ypos=ypos)
+        connections[remo] = connect(args)
 
         keyw = '{}_keyword'.format(uid)
         objects.append(object_keyword(keyw, keyword=name, subtext=''))
-        uidata[keyw] = dict(xpos=10, ypos=ypos)
+        uidata[keyw] = dict(xpos=10, ypos=ypos + 115)
         connections[keyw] = connect(args)
 
-        ypos += 115
+        ypos += 230
 
     return connections, objects, uidata
 
