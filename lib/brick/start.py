@@ -13,7 +13,7 @@ class Start(Basic):
                 'osascript', '-e',
                 SCRIPT_LAUNCH.format(script=self.prime)
             )
-            self.message('start script in new window', err, out, lvl='alert')
+            self.message('open script in new window', err, out, lvl='alert')
             return True
 
         code, _, _ = launch('open', '-a', self.prime)
@@ -27,13 +27,12 @@ class Start(Basic):
         code, _, _ = launch('pkill', flag, self.prime)
         return not code
 
-
 SCRIPT_LAUNCH = '''
-tell application "/Applications/iTerm.app"
+tell application "iTerm"
     activate
-    tell application "System Events" to keystroke "t" using command down
-    select first window
-    tell first window
+    create window with default profile
+    tell the first window
+        select
         tell current session to write text "{script} && exit"
     end tell
 end tell
