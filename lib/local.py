@@ -60,23 +60,23 @@ START_BKUP0 = Start(
 
 
 STATE_SLEEP = State(
-    'Sleep', GROUP_TEARD, command='sleepnow'
+    'Sleep', GROUP_TEARD, command='sleep_now'
 )
 STATE_SCOFF = State(
-    'Screensleep', command='sleepdsp'
+    'Screensleep', command='sleep_screen'
 )
 STATE_SCLCK = State(
-    'Screenlock', command='lock_dsp'
+    'Screenlock', command='lock_screen'
 )
 STATE_SCSAV = State(
-    'Screensaver', command='scrsaver'
+    'Screensaver', command='save_screen'
 )
 STATE_LOGOU = State(
-    'Logout', command='sign_off'
+    'Logout', command='log_out'
 )
 STATE_RESTA = State(
     'Restart', command='re_start'
 )
 STATE_SHUTD = State(
-    'Shutdown', command='shutdown'
+    'Shutdown', command='shut_down'
 )
