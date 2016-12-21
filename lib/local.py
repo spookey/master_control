@@ -64,7 +64,6 @@ STATE_SLEEP = State(
 )
 STATE_SCOFF = State(
     'Screensleep', command='sleepdsp'
-
 )
 STATE_SCLCK = State(
     'Screenlock', command='lock_dsp'

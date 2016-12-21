@@ -9,23 +9,27 @@ class Start(Basic):
 
     def full(self):
         if self.script:
-            _, out, err = launch(
-                'osascript', '-e',
-                SCRIPT_LAUNCH.format(script=self.prime)
-            )
-            self.message('open script in new window', err, out, lvl='alert')
+            self.log.info('opening script in new window...')
+            launch('osascript', '-e', SCRIPT_LAUNCH.format(script=self.prime))
             return True
 
-        code, _, _ = launch('open', '-a', self.prime)
-        return not code
+        code, _, err = launch('open', '-a', self.prime)
+        if code == 0:
+            return True
+        self.log.error('could not start: {}', ' '.join(err))
+        return False
 
     def null(self):
         flag = '-if' if self.script else '-ix'
         code, _, _ = launch('pgrep', flag, self.prime)
-        if code:
+        if code != 0:
+            self.log.debug('{} is not running', self.prime)
             return True
         code, _, _ = launch('pkill', flag, self.prime)
-        return not code
+        if code == 0:
+            return True
+        self.log.error('{} could not be killed', self.prime)
+        return False
 
 SCRIPT_LAUNCH = '''
 tell application "iTerm"

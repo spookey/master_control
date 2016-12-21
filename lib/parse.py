@@ -59,11 +59,13 @@ def main_arguments():
                 idt for idt, _, _ in actions
             )))
         )
+
         act_prs.add_argument(
-            'action', action='store', choices=[fl for at in [
-                [idt, prm] for idt, prm, _ in actions
-            ] for fl in at],
-            help='{} module actions'.format(module), type=str.lower,
+            'action', action='store', type=str.lower,
+            choices=sorted(set(fl for at in (
+                (idt, prm) for idt, prm, _ in actions
+            ) for fl in at)),
+            help='{} module actions'.format(module),
         )
         for flag, text in FLAGS.items():
             act_prs.add_argument(

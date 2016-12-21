@@ -23,4 +23,4 @@ def send_get_req(request):
             yield response
     except URLError as ex:
         LOG.error('{r.type} connection to {r.host} failed: {}', ex, r=request)
-        yield None
+        yield
