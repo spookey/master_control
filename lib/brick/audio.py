@@ -8,7 +8,7 @@ class Audio(Basic):
         self.delay = delay
 
     def do_fire(self, lift=True):
-        for step, (_, out, err) in launch_repeat(
+        for _, (_, out, err) in launch_repeat(
                 'osascript', '-e', SCRIPT_ACTION.format(
                     device=self.prime,
                     desired=('Connect' if lift else 'Disconnect'),
@@ -16,6 +16,8 @@ class Audio(Basic):
                 ), times=2, patience=self.delay,
         ):
             launch('osascript', '-e', SCRIPT_ESCAPE)
+            if err:
+                self.log.debug('bluetooth says: {}', ' '.join(err))
             if ''.join(out) == 'success':
                 return True
         return False

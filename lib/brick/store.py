@@ -12,9 +12,9 @@ class Store(Basic):
         self.power_delay = power_delay
 
     def _disk_info(self):
-        code, out, err = launch('diskutil', 'info', self.prime)
+        code, out, _ = launch('diskutil', 'info', self.prime)
         if code:
-            self.message('disk unknown', code, out, err, lvl='error')
+            self.log.warning('disk unknown: {}', ' '.join(out))
         return dict((k.strip(), v.strip()) for k, v in [
             ln.split(':') for ln in out if ln
         ])
@@ -24,47 +24,46 @@ class Store(Basic):
 
     def wait_disk(self):
         if not any(obj.__class__.__name__ == 'Power' for obj in self.below):
+            self.log.debug('disk wait for {} useless, no power', self.prime)
             return False
 
-        for step, finished in repeating(
+        for _, finished in repeating(
                 self.mounted, times=self.power_delay, patience=1
         ):
             if finished:
                 return True
-            if not step % 3:
-                self.message(
-                    'disk autmount wait #{:02}'.format(step), lvl='delay'
-                )
-        self.message('disk autmount failed', 'giving up', lvl='error')
+        self.log.error('disk autmount failed for {}', self.prime)
         return False
 
     def _fetch_password(self):
-        code, out, err = launch(
-            'security', 'find-generic-password', '-ga', self.prime
+        code, _, err = launch(
+            'security', 'find-generic-password', '-ga', self.prime, e_hide=True
         )
-        if code:
-            self.message('disk password error', code, out, err, lvl='error')
-        if not code and err:
+        if code == 0:
             _, _, passwd = err[-1].rpartition(': "')
             return passwd.rstrip('"')
 
+        self.log.error('disk password failed: {}', ' '.join(err))
+        return False
+
     def _disk_unlock(self, uuid, passwd):
-        code, out, err = launch(
+        code, _, err = launch(
             'diskutil', 'corestorage', 'unlockvolume', uuid,
             '-stdinpassphrase', stdin=passwd
         )
-        if not code:
+        if code == 0:
             return True
-        self.message('disk unlock error', code, out, err, lvl='error')
         if err and 'already unlocked and is attached' in err[0]:
+            self.log.info('disk {} was already unlocked', self.prime)
             return True
+        self.log.error('disk unlock failed', ' '.join(err))
         return False
 
     def _disk_mount(self, node):
-        code, out, err = launch('diskutil', 'mount', node)
-        if not code:
+        code, _, err = launch('diskutil', 'mount', node)
+        if code == 0:
             return True
-        self.message('disk mount error', code, out, err, lvl='error')
+        self.log.error('disk mount failed: {}', ' '.join(err))
         return False
 
     def mount_manually(self):
@@ -72,12 +71,11 @@ class Store(Basic):
         d_uuid = info.get('Disk / Partition UUID')
         d_node = info.get('Device Node')
         if not all([d_uuid, d_node]):
-            self.message('disk info not present', d_node, d_uuid, lvl='fatal')
+            self.log.error('disk info missing "{}" "{}"', d_node, d_uuid)
             return False
 
         passwd = self._fetch_password()
         if not passwd:
-            self.message('disk password not present', lvl='fatal')
             return False
 
         return self._disk_unlock(d_uuid, passwd) and self._disk_mount(d_node)
@@ -92,16 +90,10 @@ class Store(Basic):
         if not self.mounted():
             return True
 
-        for step, (code, out, err) in launch_repeat(
+        for _, (code, _, _) in launch_repeat(
                 'diskutil', 'unmount', self.prime,
                 times=self.eject_retry, patience=self.eject_wait
         ):
-            if not code:
+            if code == 0:
                 return True
-            self.message(
-                'disk unmount try #{:02}'.format(step),
-                code, out, err, lvl='error'
-            )
-
-        self.message('disk unmount failed', 'giving up', lvl='fatal')
         return False

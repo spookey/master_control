@@ -19,10 +19,10 @@ def launch(*commands, cwd=None, stdin=None, timeout=15, e_hide=False):
             proc.kill()
             out, err = proc.communicate()
 
-        if err and not e_hide:
-            LOG.debug('command err ->\n{}', err)
         if out:
             LOG.debug('command out ->\n{}', out)
+        if err and not e_hide:
+            LOG.debug('command err ->\n{}', err)
         LOG.info('command returncode: {}', proc.returncode)
         return proc.returncode, out.splitlines(), err.splitlines()
 
