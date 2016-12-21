@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from lib.snips.alert import Log
+from lib.snips.alert import Log, show_pretty
 from lib.snips.front import message
 
 
@@ -38,14 +38,16 @@ class Basic(ABC):
                 for elem in chain.recurse_chain(lift=lift):
                     yield elem
             yield self
-        return list(_iter())
+        result = list(_iter())
+        self.log.debug('collected chain with {} elements', len(result))
+        return result
 
-    @staticmethod
-    def shorter_chain(chain):
+    def shorter_chain(self, chain):
         result = []
         for elem in chain:
             if elem not in result:
                 result.append(elem)
+        self.log.debug('cut through {} chain. now {}', len(chain), len(result))
         return result
 
     def message(self, msg, *txt, lvl=None):
@@ -58,22 +60,24 @@ class Basic(ABC):
         short = self.shorter_chain(whole)
         chain = whole if slow else short
 
-        self.message(
-            'raise up' if lift else 'put down',
-            ('path', dict(
-                _now_=len(chain), short=len(short), whole=len(whole)
+        show_pretty(
+            'summary', self,
+            dict(direction='raise up' if lift else 'put down'),
+            dict(chains=dict(
+                avail=dict(short=len(short), whole=len(whole)),
+                using='whole' if slow else 'short'
             )),
-            chain, lvl=None,
+            dict(mode='dump chain' if dump else 'exec chain'),
+            chain,
         )
+        if dump:
+            return True
+
         for elem in chain:
             func = elem.full if lift else elem.null
-            self.message(
-                '{}running module'.format('not ' if dump else ''),
-                elem, lvl=None
-            )
-            if dump:
-                continue
+            self.log.info('running module: {}', elem)
             if not func():
-                self.message('module error', elem, lvl='fatal')
+                self.log.error('module {} failed: abort', elem)
                 return False
+
         return True

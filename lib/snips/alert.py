@@ -4,6 +4,8 @@ from logging import (
     getLogger
 )
 from logging.handlers import RotatingFileHandler
+from pprint import pformat
+from textwrap import indent as t_indent
 
 LEVELS = [DEBUG, INFO, WARNING, ERROR]
 ROOT_LOGGER = getLogger()
@@ -26,11 +28,22 @@ class Log(LoggerAdapter):
         func(level, str(msg).format(*args, **kwargs), (), **proc)
 
 
-def make_bucket(level, location, size=1024 * 8, count=9):
+def text_pretty(*txt, indent=' ' * 2):
+    for elem in txt:
+        yield t_indent(pformat(elem), indent)
+
+
+def show_pretty(msg, *txt):
+    print(t_indent(msg.upper(), ' ' * 2))
+    for elem in text_pretty(*txt, indent=' ' * 4):
+        print(elem)
+
+
+def make_bucket(level, location, size=1024 * 64, count=9):
     bucket = RotatingFileHandler(location, maxBytes=size, backupCount=count)
     bucket.setFormatter(Formatter('''
 {levelname:9s}{asctime:25s}{name}.{funcName}() [{pathname}:{lineno:d}]
-\t{message}'''.strip(), style='{'))
+  {message}'''.strip(), style='{'))
     bucket.setLevel(level)
     return bucket
 
@@ -39,6 +52,6 @@ def make_stream(level):
     stream = StreamHandler(stream=None)
     stream.setFormatter(Formatter('''
 {levelname:9s}{name}.{funcName}()
-\t{message}'''.strip(), style='{'))
+  {message}'''.strip(), style='{'))
     stream.setLevel(level)
     return stream
