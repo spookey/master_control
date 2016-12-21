@@ -77,7 +77,9 @@ class Basic(ABC):
             func = elem.full if lift else elem.null
             self.log.info('running module: {}', elem)
             if not func():
-                self.log.error('module {} failed: abort', elem)
+                self.log.error('module {} failed: end', elem)
                 return False
+            else:
+                self.log.info('module {} success', elem)
 
         return True

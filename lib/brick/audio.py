@@ -18,9 +18,6 @@ class Audio(Basic):
             launch('osascript', '-e', SCRIPT_ESCAPE)
             if ''.join(out) == 'success':
                 return True
-            self.message(
-                'bluetooth try #{:02}'.format(step), err, out, lvl='error'
-            )
         return False
 
     def full(self):

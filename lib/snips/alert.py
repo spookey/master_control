@@ -39,7 +39,7 @@ def show_pretty(msg, *txt):
         print(elem)
 
 
-def make_bucket(level, location, size=1024 * 64, count=9):
+def make_bucket(level, location, size=1 + (1024 * 64), count=9):
     bucket = RotatingFileHandler(location, maxBytes=size, backupCount=count)
     bucket.setFormatter(Formatter('''
 {levelname:9s}{asctime:25s}{name}.{funcName}() [{pathname}:{lineno:d}]

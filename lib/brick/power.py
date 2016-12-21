@@ -10,9 +10,9 @@ class Power(Basic):
 
     def do_fire(self, lift=True):
         with send_get_req(make_param_req(
-                self.base_url,
-                power=''.join([self.family, self.prime]),
-                state='full' if lift else 'null',
+            self.base_url,
+            power=''.join([self.family, self.prime]),
+            state='full' if lift else 'null',
         )) as rsp:
             return rsp and rsp.status == 200
 
