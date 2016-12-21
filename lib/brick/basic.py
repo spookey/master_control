@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from lib.snips.alert import Log, show_pretty
-from lib.snips.front import message
 
 
 class Basic(ABC):
@@ -49,11 +48,6 @@ class Basic(ABC):
                 result.append(elem)
         self.log.debug('cut through {} chain. now {}', len(chain), len(result))
         return result
-
-    def message(self, msg, *txt, lvl=None):
-        return message(
-            msg, *txt, pkg=self.__class__.__name__, lvl=lvl
-        )
 
     def fire(self, lift, slow=False, dump=False):
         whole = self.recurse_chain(lift=lift)
