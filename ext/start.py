@@ -1,6 +1,6 @@
-from lib.snips.alert import Log
-from ext.snaps.write import write_file
 from ext.parse import inst_arguments
+from ext.snaps.write import write_file
+from lib.snips.alert import Log
 
 LOG = Log.get(__name__)
 

@@ -1,8 +1,8 @@
 from argparse import ArgumentParser
-from lib.parse import logging_arguments, logging_setup
 
-from ext.block.zcomp import gen_zcomp
 from ext.block.alfwf import gen_alfwf
+from ext.block.zcomp import gen_zcomp
+from lib.parse import logging_arguments, logging_setup
 
 BUILDERS = dict(
     zcomp=gen_zcomp,

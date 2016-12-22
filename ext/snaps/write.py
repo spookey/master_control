@@ -1,5 +1,5 @@
-from lib.snips.files import sure_loc
 from lib.snips.alert import Log
+from lib.snips.files import sure_loc
 
 LOG = Log.get(__name__)
 
