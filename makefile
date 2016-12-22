@@ -1,4 +1,5 @@
 APP_NAME ?= shove
+EXT_MODULE ?= ext
 LIB_MODULE ?= lib
 LOGGER_DIR ?= log
 
@@ -34,7 +35,7 @@ PYREV_FILES := \
 	packages_$(APP_NAME).png
 
 cleanlog:
-	@$(DELTREE_CMD) $(LOGGER_DIR)/*.log.?
+	@$(DELTREE_CMD) $(LOGGER_DIR)/*_debug.log.?
 
 cleanrev:
 	@$(DELTREE_CMD) $(PYREV_FILES)
@@ -58,7 +59,7 @@ graph:
 		--module-names="yes" \
 		--output png \
 		--project="$(APP_NAME)" \
-		"$(LIB_MODULE)"
+		"$(LIB_MODULE)" "$(EXT_MODULE)"
 
 grapho: graph
 	@$(OPEN_CMD) $(PYREV_FILES)
@@ -66,10 +67,11 @@ grapho: graph
 lint:
 	@$(PYLINT_CMD) \
 		--disable "C0111" \
+		--disable "I0011" \
 		--msg-template="$(PYLINT_TPL)" \
 		--output-format="colorized" \
 		--reports="no" \
-		"$(LIB_MODULE)"
+		"$(LIB_MODULE)" "$(EXT_MODULE)"
 
 reqs:
 	@$(PIPREQS_CMD) --force .

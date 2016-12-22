@@ -31,14 +31,14 @@ def logging_setup(args):
     ROOT_LOGGER.addHandler(make_bucket(LEVELS[0], sure_loc(args.log_file)))
 
 
-def logging_arguments(prs):
+def logging_arguments(prs, name=PROGNAME):
     prs.add_argument(
         '-v', action='count', dest='log_level', default=0,
         help='increase verbosity'
     )
     prs.add_argument(
         '--log', action='store', dest='log_file',
-        default=base_loc('log', 'debug.log'),
+        default=base_loc('log', '{}_debug.log'.format(name)),
         help='log file location (default: \'%(default)s\')'
     )
 
