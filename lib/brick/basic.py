@@ -31,43 +31,44 @@ class Basic(ABC):
             ) if self.prime != self.ident else '')
         )
 
-    def recurse_chain(self, lift=True):
-        def _iter():
-            for chain in self.below if lift else self.above:
-                for elem in chain.recurse_chain(lift=lift):
-                    yield elem
-            yield self
-        result = list(_iter())
-        self.log.debug('collected chain with {} elements', len(result))
+    def batch(self, *, lift):
+        for chain in self.below if lift else self.above:
+            for elem in chain.batch(lift=lift):
+                yield elem
+        yield self
+
+    def recurse_batch(self, lift=True):
+        result = list(self.batch(lift=lift))
+        self.log.debug('collected batch with {} elements', len(result))
         return result
 
-    def shorter_chain(self, chain):
+    def shorter_batch(self, batch):
         result = []
-        for elem in chain:
+        for elem in batch:
             if elem not in result:
                 result.append(elem)
-        self.log.debug('cut through {} chain. now {}', len(chain), len(result))
+        self.log.debug('cut through {} batch. new {}', len(batch), len(result))
         return result
 
     def fire(self, lift, slow=False, dump=False):
-        whole = self.recurse_chain(lift=lift)
-        short = self.shorter_chain(whole)
-        chain = whole if slow else short
+        whole = self.recurse_batch(lift=lift)
+        short = self.shorter_batch(whole)
+        batch = whole if slow else short
 
         show_pretty(
             'summary', self,
             dict(direction='raise up' if lift else 'put down'),
-            dict(chains=dict(
+            dict(batches=dict(
                 avail=dict(short=len(short), whole=len(whole)),
                 using='whole' if slow else 'short'
             )),
-            dict(mode='dump chain' if dump else 'exec chain'),
-            chain,
+            dict(mode='dump batch' if dump else 'exec batch'),
+            batch,
         )
         if dump:
             return True
 
-        for elem in chain:
+        for elem in batch:
             func = elem.full if lift else elem.null
             self.log.info('running module: {}', elem)
             if not func():
