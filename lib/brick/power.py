@@ -1,22 +1,20 @@
 from lib.brick.basic import Basic
-from lib.snips.fetch import make_param_req, send_get_req
+from lib.snips.fetch import get_baseurl, make_paths_req, send_get_req
 
 
 class Power(Basic):
-    def __init__(self, *args, url=None, hostname=None, family=None, **kwargs):
+    def __init__(self, *args, hostname=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.base_url = url.format(hostname=hostname)
-        self.family = family
+        self.hostname = hostname
 
     def do_fire(self, lift=True):
-        with send_get_req(make_param_req(
-            self.base_url,
-            power=''.join([self.family, self.prime]),
-            state='full' if lift else 'null',
-        )) as rsp:
-            return rsp and rsp.status == 200
+        with send_get_req(make_paths_req(
+            get_baseurl(self.hostname), 'power',
+            'full' if lift else 'null', self.prime
+        )) as resp:
+            return resp and resp.status == 200
 
-        self.log.error('connection error [{}]', self.base_url)
+        self.log.error('connection error [{}]', self.hostname)
         return False
 
     def full(self):

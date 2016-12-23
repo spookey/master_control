@@ -9,19 +9,15 @@ GROUP_TEARD = Group(
     'Teardown'
 )
 
-POWER = dict(
-    family='01101',
-    hostname='datensammel-leitschiene',
-    url='http://{hostname}.local',
-)
+POWER = dict(hostname='z1013')
 POWER_DISK0 = Power(
-    'Kleinhirn', GROUP_TEARD, prime='00010', **POWER
+    'Kleinhirn', GROUP_TEARD, prime='2', **POWER
 )
 POWER_TONE0 = Power(
-    'Stereo', GROUP_TEARD, prime='00100', **POWER
+    'Stereo', GROUP_TEARD, prime='4', **POWER
 )
 POWER_LAMP0 = Power(
-    'Light', GROUP_TEARD, prime='01000', **POWER
+    'Light', GROUP_TEARD, prime='8', **POWER
 )
 
 STORE = dict(eject_retry=3, eject_wait=5, power_delay=30)

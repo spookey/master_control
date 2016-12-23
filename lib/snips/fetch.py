@@ -1,6 +1,5 @@
 from contextlib import closing, contextmanager
 from urllib.error import URLError
-from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from lib.snips.alert import Log
@@ -8,8 +7,8 @@ from lib.snips.alert import Log
 LOG = Log.get(__name__)
 
 
-def make_param_req(url, **data):
-    return Request('{}/?{}'.format(url.rstrip('/'), urlencode(data)))
+def get_baseurl(hostname):
+    return 'http://{hostname}.local'.format(hostname=hostname)
 
 
 def make_paths_req(url, *parts):
