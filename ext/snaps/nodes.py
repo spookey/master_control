@@ -33,11 +33,11 @@ def connect_nodes(*targets):
     ) for target in targets)
 
 
-def node_remote(uid, *, name):
+def node_remote(uid, *, name, argument='', argumenttype=0):
     return generic_node(
         uid, config=dict(
-            argument='',
-            argumenttype=0,
+            argument=argument,
+            argumenttype=argumenttype,
             triggerid=name,
             triggername=name,
             workflowonly=False
@@ -58,7 +58,16 @@ def node_script(uid, *, script):
     )
 
 
-def node_notification(uid, *, title, text=''):
+def node_applescript(uid, *, script, cachescript=False):
+    return generic_node(
+        uid, config=dict(
+            applescript=script,
+            cachescript=cachescript,
+        ), ptype='action.applescript', version=1
+    )
+
+
+def node_notification(uid, *, title='{query}', text=''):
     return generic_node(
         uid, config=dict(
             lastpathcomponent=False,
@@ -76,6 +85,17 @@ def node_arguments(uid, *, argument='', variables=dict()):
             argument=argument,
             variables=variables,
         ), ptype='utility.argument', version=1
+    )
+
+
+def node_filter(uid, *, matchstring, inputstring='{query}', matchmode=2):
+    return generic_node(
+        uid, config=dict(
+            inputstring=inputstring,
+            matchcasesensitive=False,
+            matchmode=matchmode,
+            matchstring=matchstring,
+        ), ptype='utility.filter', version=1
     )
 
 

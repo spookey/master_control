@@ -1,12 +1,15 @@
 from argparse import ArgumentParser
 
 from ext.block.alfwf import gen_alfwf
+from ext.block.volwf import gen_volwf
 from ext.block.zcomp import gen_zcomp
+from lib.local import POWER
 from lib.parse import logging_arguments, logging_setup
 
 BUILDERS = dict(
-    zcomp=gen_zcomp,
     alfwf=gen_alfwf,
+    volwf=gen_volwf,
+    zcomp=gen_zcomp,
 )
 
 
