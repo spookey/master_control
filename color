@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ext.start import i_run
+from ext.start import c_run
 
 if __name__ == '__main__':
-    exit(not i_run())
+    exit(not c_run())

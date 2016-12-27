@@ -29,3 +29,18 @@ def inst_arguments():
     args = arg_prs.parse_args()
     logging_setup(args)
     return BUILDERS, args
+
+
+def color_arguments():
+    arg_prs = ArgumentParser(
+        add_help=True, allow_abbrev=True, prog='master color',
+    )
+    arg_prs.add_argument(
+        'divider', action='store', type=int, help='divide day n times',
+    )
+    logging_arguments(arg_prs, name='color')
+    args = arg_prs.parse_args()
+    logging_setup(args)
+    if not args.divider >= 1:
+        arg_prs.error('argument divider: must be >= 1')
+    return POWER['hostname'], args
