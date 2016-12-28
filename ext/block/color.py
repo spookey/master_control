@@ -18,25 +18,26 @@ def time_span(now, div):
     return head, tail, (idx % 2 == 0)
 
 
-def color_map(val, imax, stat=False):
-    omin, omax = ((0, 0xffffff) if stat else (0xffffff, 0))
-    return int((val - 0) * (omax - omin) / (imax - 0) + omin)
+def color_map(val, *, imax, hi, lo, stat=False):
+    omin, omax = ((lo, hi) if stat else (hi, lo))
+    return int((val * (omax - omin)) / (imax + omin))
 
 
-def get_color(div):
+def get_color(args):
     now = datetime.now().replace(microsecond=0)
-    head, tail, stat = time_span(now, div)
+    head, tail, stat = time_span(now, args.divider)
     return '0x{:06x}'.format(color_map(
         (now - head).total_seconds(),
         imax=(tail - head).total_seconds(),
-        stat=stat
+        stat=stat, hi=args.hi, lo=args.lo
     ))
 
 
-def chroma(div, hostname):
+def chroma(args, name):
     with send_get_req(make_paths_req(
-        get_baseurl(hostname), 'light', 'fade', get_color(div)
+        get_baseurl(name), 'light', 'fade', get_color(args)
     )) as resp:
         return resp and resp.status == 200
 
     return False
+

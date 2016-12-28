@@ -18,4 +18,4 @@ def i_run():
 
 def c_run():
     name, args = color_arguments()
-    return chroma(args.divider, name)
+    return chroma(args, name)

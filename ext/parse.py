@@ -32,15 +32,25 @@ def inst_arguments():
 
 
 def color_arguments():
+    def _color(val):
+        if any(val.startswith(st) for st in ['0x', '0X']):
+            return int(val, 16)
+        return int(val)
+
     arg_prs = ArgumentParser(
         add_help=True, allow_abbrev=True, prog='master color',
     )
     arg_prs.add_argument(
         'divider', action='store', type=int, help='divide day n times',
     )
+    arg_prs.add_argument('--hi', action='store', type=_color, default=0xffffff)
+    arg_prs.add_argument('--lo', action='store', type=_color, default=0x000000)
+
     logging_arguments(arg_prs, name='color')
     args = arg_prs.parse_args()
     logging_setup(args)
     if not args.divider >= 1:
         arg_prs.error('argument divider: must be >= 1')
+    if args.lo >= args.hi:
+        arg_prs.error('lo < hi !!')
     return POWER['hostname'], args
