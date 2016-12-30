@@ -40,4 +40,3 @@ def chroma(args, name):
         return resp and resp.status == 200
 
     return False
-

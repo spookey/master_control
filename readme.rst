@@ -39,5 +39,28 @@ So to prepare everything for listening to music, I type::
 :--slow: Walk through the full dependency path (with duplicate actions).
 :--dump: Just print the path without invoking any module.
 
+
+ext
+===
+
+* Use the ``install`` command to create some helper files::
+
+    ./install {what} {where}
+
+Valid *what* values are:
+
+:alfwf: Generate some *info.plist* for alfred workflow with all triggers.
+:volwf: Generate some *info.plist* for alfred workflow to control volume.
+:zcomp: Generate a *_shove* file which is then be used as zsh completion.
+
+
+* The ``color`` command sets the light of full_power_.
+
+It splits the day in *n* segments, and calculates a color value between
+*hi* and *lo* based on the current time::
+
+    ./color {n} [--{hi} 0xffffff] [--{lo} 0x000000]
+
+
 .. _project description: https://www.der-beweis.de/build/master_control
 .. _full_power: https://github.com/spookey/full_power
