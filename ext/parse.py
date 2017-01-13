@@ -41,16 +41,26 @@ def color_arguments():
         add_help=True, allow_abbrev=True, prog='master color',
     )
     arg_prs.add_argument(
-        'divider', action='store', type=int, help='divide day n times',
+        'points', action='store', type=int, help='number of hi points per day',
     )
-    arg_prs.add_argument('--hi', action='store', type=_color, default=0xffffff)
-    arg_prs.add_argument('--lo', action='store', type=_color, default=0x000000)
+    arg_prs.add_argument(
+        '--hi', action='store', type=_color, default=0xffffff,
+        help='highest color value (default: \'0xffffff\')'
+    )
+    arg_prs.add_argument(
+        '--lo', action='store', type=_color, default=0x000000,
+        help='lowest color value (default: \'0x000000\')'
+    )
+    arg_prs.add_argument(
+        '--dump', '-d', action='store_true',
+        help='do not send anything, only dump color (default: \'%(default)s\')'
+    )
 
     logging_arguments(arg_prs, name='color')
     args = arg_prs.parse_args()
     logging_setup(args)
-    if not args.divider >= 1:
-        arg_prs.error('argument divider: must be >= 1')
+    if not args.points >= 1:
+        arg_prs.error('points must be >= 1')
     if args.lo >= args.hi:
-        arg_prs.error('lo < hi !!')
+        arg_prs.error('hi must be > lo')
     return POWER['hostname'], args
