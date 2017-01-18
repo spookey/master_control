@@ -9,23 +9,52 @@ GROUP_TEARD = Group(
     'Teardown'
 )
 
+
 POWER = dict(hostname='z1013')
-POWER_DISK0 = Power(
-    'Kleinhirn', GROUP_TEARD, prime='2', **POWER
+POWER_LAMP0 = Power(
+    'Light_Rack', GROUP_TEARD, prime='1', **POWER
+)
+POWER_LAMP1 = Power(
+    'Light_Desk', GROUP_TEARD, prime='2', **POWER
+)
+POWER_LAMP2 = Power(
+    'Light_Side', GROUP_TEARD, prime='4', **POWER
 )
 POWER_TONE0 = Power(
-    'Stereo', GROUP_TEARD, prime='4', **POWER
+    'Stereo', GROUP_TEARD, prime='6', **POWER
 )
-POWER_LAMP0 = Power(
-    'Light', GROUP_TEARD, prime='8', **POWER
+POWER_LAMP3 = Power(
+    'Light_Tone', GROUP_TEARD, prime='8', **POWER
 )
+POWER_DISK0 = Power(
+    'Kleinhirn', GROUP_TEARD, prime='10', **POWER
+)
+POWER_DISK1 = Power(
+    'Großhirn', GROUP_TEARD, prime='12', **POWER
+)
+POWER_AUX_0 = Power(
+    'AUX_0', GROUP_TEARD, prime='14', **POWER
+)
+POWER_LAMP4 = Power(
+    'Light_Sofa', GROUP_TEARD, prime='16', **POWER
+)
+POWER_AUX_1 = Power(
+    'AUX_1', GROUP_TEARD, prime='18', **POWER
+)
+POWER_AUX_2 = Power(
+    'AUX_2', GROUP_TEARD, prime='20', **POWER
+)
+POWER_AUX_3 = Power(
+    'AUX_3', GROUP_TEARD, prime='22', **POWER
+)
+
 
 STORE = dict(eject_retry=3, eject_wait=5, power_delay=30)
 STORE_DISK0 = Store(
     'Kleinhirn', POWER_DISK0, **STORE
 )
 STORE_DISK1 = Store(
-    'Großhirn', GROUP_TEARD, **STORE
+    'Großhirn', POWER_DISK1, **STORE
 )
 
 
