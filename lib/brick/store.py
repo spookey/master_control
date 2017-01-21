@@ -13,7 +13,7 @@ class Store(Basic):
 
     def _disk_info(self):
         code, out, _ = launch('diskutil', 'info', self.prime)
-        if code:
+        if code != 0:
             self.log.warning('disk unknown: {}', ' '.join(out))
         return dict((k.strip(), v.strip()) for k, v in [
             ln.split(':') for ln in out if ln
