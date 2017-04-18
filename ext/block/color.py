@@ -23,14 +23,10 @@ def time_span(curr, points):
             return head, tail, rise
 
 
-def get_color(points, *, c_lo, c_hi):
-    curr = datetime.now().replace(microsecond=0)
+def get_color(curr, points, *, c_lo, c_hi):
     head, tail, rise = time_span(curr, points=points)
-
-    value = (curr - head)
-    flank = (tail - head)
-    s_val = value.total_seconds()
-    s_flk = flank.total_seconds()
+    value, flank = (curr - head), (tail - head)
+    s_val, s_flk = value.total_seconds(), flank.total_seconds()
 
     LOG.debug(
         'passed ({} == {}) of ({} == {})', value, s_val, flank, s_flk
@@ -46,22 +42,22 @@ def get_color(points, *, c_lo, c_hi):
 
 
 def chroma(hostname, args):
-    color, hex_color = get_color(args.points, c_lo=args.lo, c_hi=args.hi)
+    curr = datetime.now().replace(microsecond=0)
+    color, hex_color = get_color(curr, args.points, c_lo=args.lo, c_hi=args.hi)
     request = make_paths_req(get_baseurl(hostname), 'light', 'fade', hex_color)
 
     if args.dump:
         show_pretty('chroma', dict(
-            hex=hex_color, raw=color
-        ), dict(
-            full=request.full_url, host=request.host, path=request.selector
+            current=str(curr),
+            fade=dict(color=dict(hex=hex_color, raw=color)),
+            hostname=hostname,
         ))
         return True
 
     with send_get_req(request) as resp:
         if resp and resp.status == 200:
-
-            LOG.info('send {} to {} success!', hex_color, hostname)
+            LOG.info('send color {} to {} success!', hex_color, hostname)
             return True
 
-    LOG.error('send to {} failed! sorry.', hostname)
+    LOG.error('send to {} failed! sorry!', hostname)
     return False

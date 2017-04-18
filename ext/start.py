@@ -17,4 +17,5 @@ def i_run():
 
 
 def c_run():
-    return chroma(*color_arguments())
+    hostname, args = color_arguments()
+    return chroma(hostname, args)

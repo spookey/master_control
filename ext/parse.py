@@ -33,7 +33,7 @@ def inst_arguments():
 
 def color_arguments():
     def _color(val):
-        if any(val.startswith(st) for st in ['0x', '0X']):
+        if val.lower().startswith('0x'):
             return int(val, 16)
         return int(val)
 
@@ -41,7 +41,8 @@ def color_arguments():
         add_help=True, allow_abbrev=True, prog='master color',
     )
     arg_prs.add_argument(
-        'points', action='store', type=int, help='number of hi points per day',
+        'points', action='store', type=int,
+        help='number of hi points per day',
     )
     arg_prs.add_argument(
         '--hi', action='store', type=_color, default=0xffffff,

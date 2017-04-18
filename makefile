@@ -17,6 +17,7 @@ help:
 	@echo "lint"		"\t\t" "lint code with pylint"
 	@echo "reqs"		"\t\t" "update requirements.txt"
 	@echo "sort"		"\t\t" "sort code with isort"
+	@echo "watch"		"\t\t" "watch log output"
 
 
 CLOC_CMD := cloc
@@ -33,6 +34,7 @@ PYREV_CMD := pyreverse
 PYREV_FILES := \
 	classes_$(APP_NAME).png \
 	packages_$(APP_NAME).png
+TAIL_CMD := tail -F
 
 cleanlog:
 	@$(DELTREE_CMD) $(LOGGER_DIR)/*_debug.log.?
@@ -78,3 +80,6 @@ reqs:
 
 sort:
 	@$(ISORT_CMD) -cs -fss -m=5 -y -rc .
+
+watch:
+	@$(TAIL_CMD) $(LOGGER_DIR)/*.log

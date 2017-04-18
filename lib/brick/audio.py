@@ -28,6 +28,7 @@ class Audio(Basic):
     def null(self):
         return self.do_fire(False)
 
+
 SCRIPT_ACTION = '''
 tell application "System Events" to tell process "SystemUIServer"
     tell first menu bar
