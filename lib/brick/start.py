@@ -10,7 +10,7 @@ class Start(Basic):
     def full(self):
         if self.script:
             self.log.info('opening script in new window...')
-            launch('osascript', '-e', SCRIPT_LAUNCH.format(script=self.prime))
+            launch('osascript', '-e', SCRIPT_LAUNCH.format(command=self.prime))
             return True
 
         code, _, err = launch('open', '-a', self.prime)
@@ -31,13 +31,15 @@ class Start(Basic):
         self.log.error('{} could not be killed', self.prime)
         return False
 
+
 SCRIPT_LAUNCH = '''
+set is_running to (application "iTerm" is running)
 tell application "iTerm"
     activate
-    create window with default profile
+    if is_running then create window with default profile
     tell the first window
         select
-        tell current session to write text "{script} && exit"
+        tell current session to write text "{command} && exit"
     end tell
 end tell
 '''
