@@ -64,23 +64,20 @@ AUDIO_TONE0 = Audio(
 
 
 START_PHOTO = Start(
-    'Photos', STORE_DISK0
-)
-START_LIGHT = Start(
-    'Lightroom', STORE_DISK0, prime='Adobe Photoshop Lightroom 4'
+    'Unbound', STORE_DISK1
 )
 START_ITUNE = Start(
-    'iTunes', STORE_DISK0, AUDIO_TONE0
+    'iTunes', STORE_DISK1, AUDIO_TONE0
 )
 START_DEEZE = Start(
     'Deezer', AUDIO_TONE0
 )
 START_MOVIS = Start(
-    'Movist', STORE_DISK0, STORE_DISK1, AUDIO_TONE0
+    'Movist', STORE_DISK1, AUDIO_TONE0
 )
 START_BKUP0 = Start(
-    'Rsync_K_G', STORE_DISK0, STORE_DISK1,
-    prime='/Volumes/Großhirn/disk_fetch.sh', script=True
+    'RsyncDisks', STORE_DISK0, STORE_DISK1,
+    prime='/Volumes/Kleinhirn/disk_fetch.sh', script=True
 )
 
 
