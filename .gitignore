@@ -1,2 +1,4 @@
 *.pyc
+etc/loc_*
+etc/new_*
 log/
